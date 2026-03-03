@@ -1,9 +1,7 @@
 if(process.env.NODE_ENV != 'production'){
     require('dotenv').config();
 }
-if (process.env.NODE_ENV === "production") {
-    app.set("trust proxy", 1);
-}
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -21,7 +19,9 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 const { Session } = require('express-session');
-
+if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
+}
 const dbUrl = process.env.ATLASDB_URL;
 main()
     .then(() => console.log("connected to DB"))
@@ -100,6 +100,8 @@ app.use((err, req, res, next) =>{
     let {status = 500, message = "something went wrong"} = err;
     res.status(status).render("error.ejs", {message});
 })
-app.listen(8080, () => {
-    console.log("server listening to port 8080");
-})
+
+const port = process.env.PORT || 8080;
+app.listen(port, () => {
+    console.log(`server running on port ${port}`);
+});
