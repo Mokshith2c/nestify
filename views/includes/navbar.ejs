@@ -1,0 +1,134 @@
+<style>
+    .search-bar {
+        width: 250px;
+        min-width: 250px;
+        padding-left: 15px;
+        transition: width 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    form:focus-within .search-bar {
+        width: 350px;
+    }
+
+    .btn-search {
+        background-color: #ff385c;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .btn-search i {
+        position: absolute;
+        transition: all 0.3s ease;
+    }
+
+    .btn-search:hover {
+        background-color: #e03150;
+        color: white;
+    }
+
+    .search-icon {
+        opacity: 1;
+    }
+
+    .house-icon  {
+        opacity: 0;
+    }
+
+    .btn-search:hover .search-icon {
+        opacity: 0;
+        transform: scale(0.4);
+    }
+
+    .btn-search:hover .house-icon {
+        opacity: 1;
+        color: white;
+        transform: scale(1.2);
+    }
+
+    @media(max-width: 992px){
+        .navbar-search {
+            background-color: white;
+        }
+    }
+
+   
+</style>
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-2">
+    <div class="container-fluid">
+
+        <a class="navbar-brand fs-4 fw-bold text-danger p-2" href="/">
+            <i class="fa-solid fa-house-chimney"></i>
+            nestify
+        </a>
+
+        <button class="navbar-toggler" type="button" 
+                data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+            <div class="navbar-nav">
+                <a class="nav-link px-3" href="/listings">
+                    <i class="fa-solid fa-list me-1"></i> Explore
+                </a>
+
+            </div>
+
+            <div class="ms-auto d-flex align-items-center navbar-search">
+                <form class="d-flex w-100" role="search" action="/listings/search" method="GET">
+                    <input class="form-control me-2 rounded-pill px-3 search-bar" type="search" placeholder="Search Destinations..." name="q">
+                    <button class="btn btn-search" type="submit">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <!-- <i class="fa-regular fa-face-grin-beam smile-icon"></i> -->
+                        <!-- <i class="fa-solid fa-rocket rocket-icon"></i> -->
+                         <i class="fa-solid fa-house house-icon"></i>
+                    </button>
+                </form>
+            </div>
+
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link px-3" href="/listings/new">
+                    <i class="fa-solid fa-plus me-1"></i> Airbnb your home
+                </a>
+                <% if (!currentUser) { %>
+                    <a class="nav-link px-3" href="/signup">
+                        <i class="fa-solid fa-user-plus me-1"></i>Sign up
+                    </a>
+                    <a class="nav-link px-3" href="/login">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+                    </a>
+                <% } else { %>
+                    <a class="nav-link px-3" href="/users/<%= currentUser._id %>">
+                        <i class="fa-solid fa-user me-1"></i> Profile
+                    </a>
+                    <a class="nav-link px-3" href="/logout">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                    </a>
+                <% } %>
+            </div>
+
+        </div>
+    </div>
+</nav>
+
+<style>
+  .nav-link {
+    font-weight: 500;
+  }
+
+  .nav-link:hover {
+    color: #ff385c !important; 
+  }
+</style>
+
+

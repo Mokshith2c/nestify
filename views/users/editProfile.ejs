@@ -1,0 +1,35 @@
+<% layout("layouts/boilerplate.ejs") -%>
+
+<% const avatarUrl = (profile && profile.avatar && profile.avatar.url) ? profile.avatar.url : "https://images.unsplash.com/vector-1758589026240-001260402d98?q=80&w=1267&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; %>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card shadow-sm p-4">
+            <h3 class="mb-3">Edit Profile</h3>
+            <form method="POST" action="/users/<%= user._id %>?_method=PUT" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label class="form-label d-block">Current Avatar</label>
+                    <img src="<%= avatarUrl %>" class="profile-avatar" alt="profile avatar">
+                </div>
+
+                <div class="mb-3">
+                    <label for="avatar" class="form-label">Upload New Avatar (optional)</label>
+                    <input id="avatar" type="file" class="form-control" name="profile[avatar]" accept="image/*">
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="useDefaultAvatar" name="profile[useDefaultAvatar]">
+                    <label class="form-check-label" for="useDefaultAvatar">Use default avatar</label>
+                </div>
+
+                <div class="mb-3">
+                    <label for="bio" class="form-label">Bio</label>
+                    <textarea id="bio" name="profile[bio]" class="form-control" rows="4" maxlength="500" placeholder="Tell people about yourself"><%= profile.bio %></textarea>
+                </div>
+
+                <button class="btn btn-dark">Save changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+<br>
