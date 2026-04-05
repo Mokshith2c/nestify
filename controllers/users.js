@@ -103,3 +103,59 @@ module.exports.updateProfile = async (req, res) => {
     req.flash("success", "Profile updated");
     res.redirect(`/users/${id}`);
 }
+
+module.exports.showWishlist = async (req, res) => {
+    let {id} = req.params;
+    const user = await User.findById(id).populate({
+        path: "wishlist",
+        populate: {
+            path: "owner"
+        }
+    });
+
+    if(!user){
+        req.flash("error", "User not found");
+        return res.redirect("/listings");
+    }
+
+    const wishlist = user.wishlist.filter((listing) => listing);
+    res.render("users/wishlist.ejs", { user, wishlist });
+}
+
+module.exports.addToWishlist = async (req, res) => {
+    const { listingId } = req.params;
+    const listing = await Listing.findById(listingId);
+
+    if(!listing){
+        req.flash("error", "Listing not found");
+        return res.redirect("/listings");
+    }
+
+    const user = await User.findById(req.user._id);
+    const alreadyWishlisted = user.wishlist.some((favId) => favId.equals(listing._id));
+
+    if(!alreadyWishlisted){
+        user.wishlist.push(listing._id);
+        await user.save();
+        req.flash("success", "Listing added to wishlist");
+    } else {
+        req.flash("success", "Listing is already in your wishlist");
+    }
+
+    res.redirect(`/listings/${listingId}`);
+}
+
+module.exports.removeFromWishlist = async (req, res) => {
+    const { listingId } = req.params;
+    const user = await User.findById(req.user._id);
+    user.wishlist.pull(listingId);
+    await user.save();
+
+    req.flash("success", "Listing removed from wishlist");
+    const referer = req.get("referer") || "";
+    if(referer.includes("/wishlist")){
+        return res.redirect(`/users/${req.user._id}/wishlist`);
+    }
+
+    res.redirect(`/listings/${listingId}`);
+}

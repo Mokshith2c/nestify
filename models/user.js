@@ -10,7 +10,13 @@ const userSchema = new Schema({
     profile: {
         type: Schema.Types.ObjectId,
         ref: "Profile"
-    }
+    },
+    wishlist: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Listing"
+        }
+    ]
 })
 userSchema.plugin(passportLocalMongoose);
 

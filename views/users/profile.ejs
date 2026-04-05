@@ -23,6 +23,7 @@
             <% if (currentUser && currentUser._id.equals(user._id)) { %>
                 <div class="mt-4">
                     <a href="/users/<%= user._id %>/edit" class="btn btn-dark">Edit profile</a>
+                    <a href="/users/<%= user._id %>/wishlist" class="btn btn-outline-dark ms-2">My wishlist</a>
                 </div>
             <% } %>
         </div>

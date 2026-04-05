@@ -12,6 +12,25 @@
                 <p class="card-text mb-0  mx-1"><%= listing.country %></p>
             </div>
         </div>
+
+        <% if (currentUser) { %>
+        <div class="d-flex justify-content-center mt-3">
+            <% if (isInWishlist) { %>
+                <form method="POST" action="/users/wishlist/<%= listing._id %>?_method=DELETE">
+                    <button class="btn btn-outline-danger px-4">
+                        <i class="fa-solid fa-heart-crack me-1"></i> Remove from Wishlist
+                    </button>
+                </form>
+            <% } else { %>
+                <form method="POST" action="/users/wishlist/<%= listing._id %>">
+                    <button class="btn btn-danger px-4">
+                        <i class="fa-solid fa-heart me-1"></i> Add to Wishlist
+                    </button>
+                </form>
+            <% } %>
+        </div>
+        <% } %>
+
         <% if (currentUser && listing.owner && currentUser._id.equals(listing.owner._id)) { %>
         <div class="d-flex justify-content-center gap-3 mt-3 mb-4">
             <a href="/listings/<%= listing._id %>/edit" class="btn btn-dark edit-btn px-4">Edit</a>

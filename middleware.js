@@ -6,8 +6,7 @@ const {reviewSchema} = require("./schema.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
     if(!req.isAuthenticated()){
-        // Only save redirect URL for GET requests (safe to revisit)
-        // For POST/PUT/DELETE, don't save the URL as they can't be replayed safely
+
         if(req.method === "GET"){
             req.session.redirectUrl = req.originalUrl;
         }

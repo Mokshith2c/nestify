@@ -30,13 +30,12 @@ const listingSchema = new Schema({
     ],
     owner: {
         type: Schema.Types.ObjectId,
-        // ref tells Mongoose which model/collection this ObjectId belongs to — so you can later fetch full related data using .populate().
         ref: "User"
     },
     geometry: {
         type: {
-            type: String, // Don't do `{ location: { type: String } }`
-            enum: ['Point'], // 'location.type' must be 'Point'
+            type: String,
+            enum: ['Point'],
             required: true
         },
         coordinates: {

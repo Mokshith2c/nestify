@@ -19,6 +19,10 @@ router.route("/login")
 
 router.get("/logout", userController.logout);
 
+router.get("/users/:id/wishlist", isLoggedIn, isProfileOwner, wrapAsync(userController.showWishlist));
+router.post("/users/wishlist/:listingId", isLoggedIn, wrapAsync(userController.addToWishlist));
+router.delete("/users/wishlist/:listingId", isLoggedIn, wrapAsync(userController.removeFromWishlist));
+
 router.get("/users/:id", wrapAsync(userController.showProfile));
 router.get("/users/:id/edit", isLoggedIn, isProfileOwner, wrapAsync(userController.renderEditProfile));
 router.put(

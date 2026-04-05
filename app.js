@@ -71,10 +71,9 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Those methods are written inside Passport because Passport is in charge of login/session,
-// and it must call the User model's methods to know who the user is.
+
 passport.use(new LocalStrategy(User.authenticate()));
-// Store only user ID in session
+// Store only user ID in session, not the entire user object
 passport.serializeUser(User.serializeUser());
 // Find full user from DB using ID
 passport.deserializeUser(User.deserializeUser());

@@ -19,7 +19,6 @@ async function main() {
 const initDB = async() => {
     await Listing.deleteMany({});
     
-    // Create or find a demo user for seeded listings
     let demoUser = await User.findOne({ username: "demo-user" });
     if (!demoUser) {
         const newUser = new User({
@@ -29,8 +28,8 @@ const initDB = async() => {
         demoUser = await User.register(newUser, "demo123");
         console.log("Demo user created");
     }
+
     
-    // Assign the demo user as owner for all seeded listings
     initData.data = initData.data.map((obj) => ({...obj, owner: demoUser._id}));
     await Listing.insertMany(initData.data);
     console.log("data was intialized");

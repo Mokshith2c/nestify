@@ -1,4 +1,5 @@
 const Listing = require("../models/listing.js");
+const User = require("../models/user.js");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({accessToken: mapToken});
@@ -26,8 +27,16 @@ module.exports.showListing = async (req, res) => {
         req.flash("error", "Listing you requested for does not exist!");
         return res.redirect("/listings");
     }
-    // console.log(listing);
-    res.render("listings/show.ejs", {listing, mapToken: process.env.MAP_TOKEN});
+
+    let isInWishlist = false;
+    if(req.user){
+        const user = await User.findById(req.user._id).select("wishlist");
+        if(user){
+            isInWishlist = user.wishlist.some((listingId) => listingId.equals(listing._id));
+        }
+    }
+
+    res.render("listings/show.ejs", {listing, mapToken: process.env.MAP_TOKEN, isInWishlist});
 }
 
 module.exports.createListing = async(req, res, next) => {
