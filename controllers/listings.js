@@ -1,5 +1,6 @@
 const Listing = require("../models/listing.js");
 const User = require("../models/user.js");
+const mongoose = require("mongoose");
 const mbxGeocoding = require('@mapbox/mapbox-sdk/services/geocoding');
 const mapToken = process.env.MAP_TOKEN;
 const geocodingClient = mbxGeocoding({accessToken: mapToken});
@@ -28,6 +29,34 @@ module.exports.showListing = async (req, res) => {
         return res.redirect("/listings");
     }
 
+    // Calculate average rating using aggregate pipeline
+    const stats = await Listing.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(id)
+            }
+        },
+        {
+            $lookup: {
+                from: "reviews",
+                localField: "reviews",
+                foreignField: "_id",
+                as: "reviewDocs"
+            }
+        },
+        {
+            $project: {
+                averageScore: {
+                    $avg: "$reviewDocs.rating"
+                }
+            }
+        }
+    ]);
+
+    let avgRating = (stats.length > 0 && stats[0].averageScore !== null) 
+        ? stats[0].averageScore.toFixed(1) 
+        : "No reviews";
+
     let isInWishlist = false;
     if(req.user){
         const user = await User.findById(req.user._id).select("wishlist");
@@ -36,7 +65,7 @@ module.exports.showListing = async (req, res) => {
         }
     }
 
-    res.render("listings/show.ejs", {listing, mapToken: process.env.MAP_TOKEN, isInWishlist});
+    res.render("listings/show.ejs", {listing, mapToken: process.env.MAP_TOKEN, isInWishlist, avgRating});
 }
 
 module.exports.createListing = async(req, res, next) => {

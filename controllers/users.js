@@ -5,21 +5,21 @@ const Review = require("../models/review.js");
 
 
 module.exports.signup = async (req, res, next) => {
-    try{
-        let {username, email, password} = req.body;
-        const newuser = new User({email, username});
+    try {
+        let { username, email, password } = req.body;
+        const newuser = new User({ email, username });
         const registeredUser = await User.register(newuser, password);
         const profile = await Profile.create({ user: registeredUser._id });
         registeredUser.profile = profile._id;
         await registeredUser.save();
-        req.login(registeredUser, (err)=>{
-            if(err){
+        req.login(registeredUser, (err) => {
+            if (err) {
                 return next(err);
             }
             req.flash("success", "Welcome to Wanderlust");
             res.redirect("/listings");
         })
-    } catch(e){
+    } catch (e) {
         req.flash("error", e.message);
         res.redirect("/signup");
 
@@ -36,7 +36,7 @@ module.exports.renderLogin = (req, res) => {
 
 module.exports.logout = (req, res, next) => {
     req.logout((err) => {
-        if(err){
+        if (err) {
             return next(err);
         }
         req.flash("success", "Successfully logged out");
@@ -51,27 +51,27 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.showProfile = async (req, res) => {
-    let {id} = req.params;
+    let { id } = req.params;
     const user = await User.findById(id).populate("profile");
-    if(!user){
+    if (!user) {
         req.flash("error", "User not found");
         return res.redirect("/listings");
     }
 
     const listings = await Listing.find({ owner: id });
-    res.render("users/profile.ejs", { user, profile: user.profile, listings});
+    res.render("users/profile.ejs", { user, profile: user.profile, listings });
 }
 
 module.exports.renderEditProfile = async (req, res) => {
-    let {id} = req.params;
+    let { id } = req.params;
     const user = await User.findById(id).populate("profile");
-    if(!user){
+    if (!user) {
         req.flash("error", "User not found");
         return res.redirect("/listings");
     }
 
     let profile = user.profile;
-    if(!profile){
+    if (!profile) {
         profile = await Profile.create({ user: user._id });
         user.profile = profile._id;
         await user.save();
@@ -81,9 +81,9 @@ module.exports.renderEditProfile = async (req, res) => {
 }
 
 module.exports.updateProfile = async (req, res) => {
-    let {id} = req.params;
+    let { id } = req.params;
     const user = await User.findById(id).populate("profile");
-    if(!user || !user.profile){
+    if (!user || !user.profile) {
         req.flash("error", "Profile not found");
         return res.redirect(`/users/${id}`);
     }
@@ -93,9 +93,9 @@ module.exports.updateProfile = async (req, res) => {
 
     user.profile.bio = bio;
 
-    if(useDefaultAvatar){
+    if (useDefaultAvatar) {
         user.profile.avatar = { url: defaultAvatarUrl, filename: "profile-avatar" };
-    } else if(req.file){
+    } else if (req.file) {
         user.profile.avatar = { url: req.file.secure_url, filename: req.file.public_id };
     }
 
@@ -105,7 +105,7 @@ module.exports.updateProfile = async (req, res) => {
 }
 
 module.exports.showWishlist = async (req, res) => {
-    let {id} = req.params;
+    let { id } = req.params;
     const user = await User.findById(id).populate({
         path: "wishlist",
         populate: {
@@ -113,7 +113,7 @@ module.exports.showWishlist = async (req, res) => {
         }
     });
 
-    if(!user){
+    if (!user) {
         req.flash("error", "User not found");
         return res.redirect("/listings");
     }
@@ -126,7 +126,7 @@ module.exports.addToWishlist = async (req, res) => {
     const { listingId } = req.params;
     const listing = await Listing.findById(listingId);
 
-    if(!listing){
+    if (!listing) {
         req.flash("error", "Listing not found");
         return res.redirect("/listings");
     }
@@ -134,7 +134,7 @@ module.exports.addToWishlist = async (req, res) => {
     const user = await User.findById(req.user._id);
     const alreadyWishlisted = user.wishlist.some((favId) => favId.equals(listing._id));
 
-    if(!alreadyWishlisted){
+    if (!alreadyWishlisted) {
         user.wishlist.push(listing._id);
         await user.save();
         req.flash("success", "Listing added to wishlist");
@@ -148,12 +148,13 @@ module.exports.addToWishlist = async (req, res) => {
 module.exports.removeFromWishlist = async (req, res) => {
     const { listingId } = req.params;
     const user = await User.findById(req.user._id);
-    user.wishlist.pull(listingId);
+
+    user.wishlist.pull({ _id: listingId });
     await user.save();
 
     req.flash("success", "Listing removed from wishlist");
     const referer = req.get("referer") || "";
-    if(referer.includes("/wishlist")){
+    if (referer.includes("/wishlist")) {
         return res.redirect(`/users/${req.user._id}/wishlist`);
     }
 
