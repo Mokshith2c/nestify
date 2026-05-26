@@ -75,11 +75,21 @@ module.exports.createListing = async(req, res, next) => {
             req.flash("error", "Please upload an image!");
             return res.redirect("/listings/new");
         }
+
+        if(!req.body.listing?.location || !req.body.listing.location.trim()) {
+            req.flash("error", "Please enter a location.");
+            return res.redirect("/listings/new");
+        }
         
         let response = await geocodingClient.forwardGeocode({
             query: req.body.listing.location,
             limit: 1
         }).send();
+
+        if(!response.body.features || response.body.features.length === 0) {
+            req.flash("error", "Location not found. Please check the spelling and try again.");
+            return res.redirect("/listings/new");
+        }
         
         let url = req.file.secure_url;
         let filename = req.file.public_id;
